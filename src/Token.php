@@ -10,6 +10,7 @@ use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Validation\Constraint\IdentifiedBy;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\PermittedFor;
+use Lcobucci\JWT\Token\Plain;
 
 class Token{
     /**
@@ -23,6 +24,7 @@ class Token{
     protected $publicKey = '';
     
     protected Configuration $config;
+    protected Plain $token;
     
     /**
      * 初始化
@@ -48,10 +50,11 @@ class Token{
     
     /**
      * 创建 Token
-     * @param int 		$uid	用户ID
+     * @param int 		$uid		用户ID
+     * @param int		$expand		更多信息
      * @return string
      */
-    public function create($uid) {
+    public function create($uid, $expand = []) {
 		$now = new \DateTimeImmutable();
 		$builder = $this->config->builder();
 		if($this->iss) $builder->issuedBy($this->iss);
@@ -60,9 +63,15 @@ class Token{
 		$builder->issuedAt($now);
 		$builder->expiresAt($now->modify($this->expires));
 		$builder->withClaim('uid', $uid);
-		$token = $builder->getToken($this->config->signer(), $this->config->signingKey());
+		if($expand) $builder->withClaim('extend', $expand);
+		
+		$this->token = $builder->getToken($this->config->signer(), $this->config->signingKey());
+    	
+		return $this->token->toString();
+    }
     
-		return $token->toString();
+    public function getClaim($key) {
+    	return $this->token->claims()->get($key);
     }
     
     /**
@@ -72,12 +81,12 @@ class Token{
      * @return boolean
      */
     public function validating($tokenString, $jti = false) {
-    	$token = $this->config->parser()->parse($tokenString);
+    	$this->token = $this->config->parser()->parse($tokenString);
     	
     	$this->setValidationConstraints($jti);
     	$constraints = $this->config->validationConstraints();
     	
-    	if(!$this->config->validator()->validate($token, ...$constraints)) {
+    	if(!$this->config->validator()->validate($this->token, ...$constraints)) {
     		throw new \Exception('Token 错误');
     	}
     	
