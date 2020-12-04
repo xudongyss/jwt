@@ -54,7 +54,7 @@ class Token{
      * @param int		$expand		更多信息
      * @return string
      */
-    public function create($uid, $expand = []) {
+    public function create($uid, $extend = []) {
 		$now = new \DateTimeImmutable();
 		$builder = $this->config->builder();
 		if($this->iss) $builder->issuedBy($this->iss);
@@ -63,7 +63,7 @@ class Token{
 		$builder->issuedAt($now);
 		$builder->expiresAt($now->modify($this->expires));
 		$builder->withClaim('uid', $uid);
-		if($expand) $builder->withClaim('extend', $expand);
+		if($expand) $builder->withClaim('extend', $extend);
 		
 		$this->token = $builder->getToken($this->config->signer(), $this->config->signingKey());
     	
