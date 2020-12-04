@@ -1,0 +1,20 @@
+{
+    "name": "xudongyss/jwt",
+    "description": "jwt",
+    "type": "library",
+    "authors": [
+        {
+            "name": "xudongyss",
+            "email": "xudong.yss@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+		"lcobucci/jwt": "^4.0"
+	},
+    "autoload": {
+        "psr-4": {
+            "XuDongYss\\JWT\\": "src/"
+        }
+    }
+}
