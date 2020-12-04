@@ -1,4 +1,4 @@
-# 阿里系相关SDK
+# JSON WEB TOKEN
 
 [TOC]
 
@@ -23,8 +23,10 @@ $public = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAg1c6IpavFaB3rJUCAfWuZKWm5
 
 /* 用户ID */
 $uid = 100000001;
+/* 扩展数据，可空 */
+$extend = [];
 $token = new Token($private, $public);
-$token->create($uid);
+$token->create($uid, $extend);
 ```
 
 ### 校验
@@ -33,5 +35,16 @@ $token->create($uid);
 /* Token */
 $tokenString = '';
 $token->validating($tokenString);
+```
+
+### 获取数据
+
+```php
+//jti
+$token->getClaim('jti');
+//uid
+$token->getClaim('uid');
+//extend
+$token->getClaim('extend');
 ```
 
