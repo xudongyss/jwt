@@ -63,7 +63,7 @@ class Token{
 		$builder->issuedAt($now);
 		$builder->expiresAt($now->modify($this->expires));
 		$builder->withClaim('uid', $uid);
-		if($expand) $builder->withClaim('extend', $extend);
+		if($extend) $builder->withClaim('extend', $extend);
 		
 		$this->token = $builder->getToken($this->config->signer(), $this->config->signingKey());
     	
