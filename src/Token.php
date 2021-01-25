@@ -59,7 +59,8 @@ class Token{
 		$builder = $this->config->builder();
 		if($this->iss) $builder->issuedBy($this->iss);
 		if($this->aud) $builder->permittedFor($this->aud);
-		$builder->identifiedBy(bin2hex(random_bytes(5)));
+		/* Token ID，需开启: session */
+		$builder->identifiedBy(session_create_id());
 		$builder->issuedAt($now);
 		$builder->expiresAt($now->modify($this->expires));
 		$builder->withClaim('uid', $uid);
