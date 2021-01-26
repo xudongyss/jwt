@@ -10,7 +10,8 @@
     ],
     "minimum-stability": "stable",
     "require": {
-		"lcobucci/jwt": "^4.0"
+		"lcobucci/jwt": "^4.0",
+		"defuse/php-encryption": "^2.2"
 	},
     "autoload": {
         "psr-4": {
