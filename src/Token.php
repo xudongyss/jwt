@@ -60,7 +60,7 @@ class Token{
 		if($this->iss) $builder->issuedBy($this->iss);
 		if($this->aud) $builder->permittedFor($this->aud);
 		/* Token ID，需开启: session */
-		$builder->identifiedBy(session_create_id());
+		$builder->identifiedBy($this->generateUniqueIdentifier());
 		$builder->issuedAt($now);
 		$builder->expiresAt($now->modify($this->expires));
 		$builder->withClaim('uid', $uid);
@@ -69,6 +69,10 @@ class Token{
 		$this->token = $builder->getToken($this->config->signer(), $this->config->signingKey());
     	
 		return $this->token->toString();
+    }
+    
+    protected function generateUniqueIdentifier($length = 40) {
+    	return \bin2hex(\random_bytes($length));
     }
     
     public function getClaim($key) {
