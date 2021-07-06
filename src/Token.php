@@ -1,5 +1,5 @@
 <?php
-namespace XuDongYss\JWT;
+namespace xudongyss\jwt;
 
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -12,16 +12,20 @@ use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use Lcobucci\JWT\Token\Plain;
 
-class Token{
+/**
+ * jwt
+ */
+class Token
+{
     /**
      * 过期时间
      * +1 year(s) month(s) day(s) hour(s) minute(s) second(s)
      */
-    protected $iss = '';
-    protected $aud = '';
-    protected $expires = '+1 hour';
+    protected $iss        = '';
+    protected $aud        = '';
+    protected $expires    = '+1 hour';
     protected $privateKey = '';
-    protected $publicKey = '';
+    protected $publicKey  = '';
     
     protected Configuration $config;
     protected Plain $token;
@@ -34,16 +38,16 @@ class Token{
      * @param string 	$aud
      * @param string 	$expires		过期时间
      */
-    public function __construct($privateKey, $publicKey, $iss = '', $aud = '', $expires = '') {
+    public function __construct($privateKey, $publicKey, $iss = '', $aud = '', $expires = '')
+    {
     	$this->privateKey = $privateKey;
-    	$this->publicKey = $publicKey;
-    	
-    	$this->iss = $iss;
-    	$this->aud = $aud;
+    	$this->publicKey  = $publicKey;
+    	$this->iss        = $iss;
+    	$this->aud        = $aud;
     	if($expires) $this->expires = $expires;
     	
-    	$privateKey = InMemory::plainText($this->handlePrivateKey($this->privateKey));
-    	$publicKey = InMemory::plainText($this->handlePublicKey($this->publicKey));
+    	$privateKey   = InMemory::plainText($this->handlePrivateKey($this->privateKey));
+    	$publicKey    = InMemory::plainText($this->handlePublicKey($this->publicKey));
     	
     	$this->config = Configuration::forAsymmetricSigner(new Sha256(), $privateKey, $publicKey);
     }
@@ -54,8 +58,9 @@ class Token{
      * @param int		$expand		更多信息
      * @return string
      */
-    public function create($uid, $extend = []) {
-		$now = new \DateTimeImmutable();
+    public function create($uid, $extend = [])
+    {
+		$now     = new \DateTimeImmutable();
 		$builder = $this->config->builder();
 		if($this->iss) $builder->issuedBy($this->iss);
 		if($this->aud) $builder->permittedFor($this->aud);
@@ -71,11 +76,13 @@ class Token{
 		return $this->token->toString();
     }
     
-    protected function generateUniqueIdentifier($length = 40) {
+    protected function generateUniqueIdentifier($length = 40)
+    {
     	return \bin2hex(\random_bytes($length));
     }
     
-    public function getClaim($key) {
+    public function getClaim($key)
+    {
     	return $this->token->claims()->get($key);
     }
     
@@ -85,7 +92,8 @@ class Token{
      * @throws \Exception
      * @return boolean
      */
-    public function validating($tokenString, $jti = false) {
+    public function validating($tokenString, $jti = false)
+    {
     	$this->token = $this->config->parser()->parse($tokenString);
     	
     	$this->setValidationConstraints($jti);
@@ -101,11 +109,12 @@ class Token{
     /**
      * 设置验证器
      */
-    protected function setValidationConstraints($jti = false) {
+    protected function setValidationConstraints($jti = false)
+    {
     	/* 设置验证器 */
     	$validationConstraints = [
-    		new SignedWith($this->config->signer(), $this->config->verificationKey()),	//验证签名
-    		new ValidAt(new SystemClock(new \DateTimeZone('Asia/Shanghai'))),			//验证时间：可用时间、过期时间
+    		new SignedWith($this->config->signer(), $this->config->verificationKey()),  //验证签名
+    		new ValidAt(new SystemClock(new \DateTimeZone('Asia/Shanghai'))),  //验证时间：可用时间、过期时间
     	];
     	/* 验证 jti */
     	if($jti !== false) $validationConstraints[] = new IdentifiedBy($jti);
@@ -120,7 +129,8 @@ class Token{
      * @param string	$privateKey	纯字符串（一整行，无换行）
      * @return string
      */
-    public function handlePrivateKey($privateKey) {
+    public function handlePrivateKey($privateKey)
+    {
     	return "-----BEGIN RSA PRIVATE KEY-----\n".wordwrap($privateKey, 64, "\n", true)."\n-----END RSA PRIVATE KEY-----";
     }
     
@@ -129,7 +139,8 @@ class Token{
      * @param string	$publicKey	纯字符串（一整行，无换行）
      * @return string
      */
-    public function handlePublicKey($publicKey) {
+    public function handlePublicKey($publicKey)
+    {
     	return "-----BEGIN PUBLIC KEY-----\n".wordwrap($publicKey, 64, "\n", true)."\n-----END PUBLIC KEY-----";
     }
 }

@@ -1,16 +1,17 @@
 <?php
-/**
- * RefreshToken
- */
-namespace XuDongYss\JWT;
+namespace xudongyss\jwt;
 
 use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 
-class RefreshToken{
+/**
+ * RefreshToken
+ */
+class RefreshToken
+{
 	protected $encryptionKey;
-	protected $identifier = '';
-	protected $expires = '+1 month';
+	protected $identifier   = '';
+	protected $expires      = '+1 month';
 	protected $refreshToken = [];
 	
 	/**
@@ -18,7 +19,8 @@ class RefreshToken{
 	 * @param string 	$encryptionKey 加密 key
 	 * @param string 	$expires
 	 */
-	public function __construct($encryptionKey, $expires = '') {
+	public function __construct($encryptionKey, $expires = '')
+    {
 		$this->encryptionKey = $encryptionKey;
 		if($expires) $this->expires = $expires;
 	}
@@ -29,7 +31,8 @@ class RefreshToken{
 	 * @param string 	$accessTokenId
 	 * @return string
 	 */
-	public function create($uid, $accessTokenId) {
+	public function create($uid, $accessTokenId)
+    {
 		$this->refreshToken = [
 			'refresh_token_id'=> $this->generateUniqueIdentifier(),
 			'access_token_id'=> $accessTokenId,
@@ -52,7 +55,8 @@ class RefreshToken{
 	 * @param string 		$refreshTokenString
 	 * @throws \Exception
 	 */
-	public function validating($refreshTokenString) {
+	public function validating($refreshTokenString)
+    {
 		try{
 			$refreshTokenJson = Crypto::decryptWithPassword($refreshTokenString, $this->encryptionKey);
 			$refreshToken = json_decode($refreshTokenJson, true);
@@ -73,7 +77,8 @@ class RefreshToken{
 		}
 	}
 	
-	public function getClaim($key) {
+	public function getClaim($key)
+    {
 		return $this->refreshToken[$key];
 	}
 	
@@ -82,13 +87,15 @@ class RefreshToken{
 	 * @throws \Exception
 	 * @return boolean
 	 */
-	protected function validExpireTime() {
+	protected function validExpireTime()
+    {
 		if($this->refreshToken['expire_time'] < time()) throw new \Exception('RefreshToken 已过期');
 		
 		return true;
 	}
 	
-	protected function generateUniqueIdentifier($length = 40) {
+	protected function generateUniqueIdentifier($length = 40)
+    {
 		return \bin2hex(\random_bytes($length));
 	}
 }

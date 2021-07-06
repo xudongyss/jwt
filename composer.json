@@ -15,7 +15,7 @@
 	},
     "autoload": {
         "psr-4": {
-            "XuDongYss\\JWT\\": "src/"
+            "xudongyss\\jwt\\": "src/"
         }
     }
 }
